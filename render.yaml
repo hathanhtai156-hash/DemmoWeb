@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: logiport-mart
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SQLITE_DB_PATH
+        value: /tmp/database.sqlite
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini

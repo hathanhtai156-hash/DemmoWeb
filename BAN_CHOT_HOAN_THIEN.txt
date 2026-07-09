@@ -1,0 +1,19 @@
+BẢN CHỐT HOÀN THIỆN - LOGIPORT MART
+
+Tài khoản demo:
+- Admin: admin / admin123
+- Staff: staff / staff123
+- Tài xế: taixe / tx123456
+
+Luồng demo khuyến nghị:
+1. Mở Dashboard/Admin để xem đơn.
+2. Vào Logistics, bấm Chạy Greedy để xem Candidate Set, Selection, Feasibility, Objective, Solution.
+3. Bấm Chia chuyến 100kg để hệ thống gom theo khu vực + phân cho Tài xế Demo.
+4. Vào Driver bằng acc taixe, bấm Nhận đơn → Đang giao → Hoàn tất.
+5. Quay lại Admin/Dashboard xem trạng thái cập nhật.
+
+Điểm nhấn:
+- 100 đơn địa chỉ khác nhau, không trùng.
+- Gom đơn theo khu vực trước, tránh tuyến phi lý.
+- Một tài xế demo để không lệch tài khoản khi bảo vệ.
+- Greedy hiển thị rõ từng bước và so sánh trước/sau tối ưu.

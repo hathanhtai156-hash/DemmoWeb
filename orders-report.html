@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiPort Mart - Báo cáo đơn hàng</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-required-roles="admin,staff">
+<div class="top-line"></div>
+<header class="header internal-header">
+  <div class="header-inner">
+    <div class="logo">LOGIPORT<span>ORDER REPORT</span></div>
+    <button class="menu-btn" type="button"><i class="fa-solid fa-file-excel"></i> đơn hàng</button>
+    <div class="search">
+      <input id="reportSearchInput" type="text" placeholder="Tìm mã đơn, khách hàng, trạng thái, tài xế..." oninput="loadOrdersReport()">
+      <button type="button" onclick="loadOrdersReport()"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <a class="header-action auth-action" id="authAction" href="profile.html" onclick="toggleUserInfo(event)"><span class="icon"><i class="fa-solid fa-user-tie"></i></span><div id="authActionText">Đăng<br>nhập</div></a>
+    <button id="logoutButtonHeader" class="btn btn-secondary logout-button" type="button" onclick="clearAuth()" style="display:none; margin-left:12px;">Đăng xuất</button>
+  </div>
+</header>
+<nav class="sub-nav internal-nav">
+  <div class="sub-nav-inner">
+    <a href="index.html"><i class="fa-solid fa-store"></i> Web bán hàng</a>
+    <a id="adminLink" href="admin.html" data-role-link="admin"><i class="fa-solid fa-building-shield"></i> Admin</a>
+    <a id="staffLink" href="staff.html" data-role-link="admin,staff"><i class="fa-solid fa-clipboard-check"></i> Staff</a>
+    <a class="active" href="orders-report.html" data-role-link="admin,staff"><i class="fa-solid fa-file-excel"></i> Báo cáo đơn hàng</a>
+    <a id="driverLink" href="driver.html" data-role-link="driver"><i class="fa-solid fa-truck-fast"></i> Tài xế</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+  </div>
+</nav>
+
+<main class="main company-main">
+  <div class="admin-guard" id="adminGuard" aria-hidden="true">
+    <div class="guard-card">
+      <h2>Trang báo cáo dành cho Admin/Staff</h2>
+      <p>Đăng nhập Admin hoặc Staff để xem báo cáo đơn hàng.</p>
+      <a class="btn btn-primary" href="auth.html">Đăng nhập</a>
+    </div>
+  </div>
+
+  <section class="page-hero company-hero report-hero">
+    <div>
+      <span><i class="fa-solid fa-chart-column"></i></span>
+      <h1>Báo cáo tổng đơn hàng</h1>
+      <p>Trang này tổng hợp đơn hàng theo trạng thái, tài xế, tuyến giao và hỗ trợ xuất Excel.</p>
+    </div>
+    <div class="hero-orbit"><i class="fa-solid fa-file-excel"></i></div>
+  </section>
+
+  <section class="dashboard-grid company-dashboard">
+    <div class="stat-card"><h3 id="reportTotalOrders">0</h3><p>Tổng đơn trong hệ thống</p></div>
+    <div class="stat-card"><h3 id="reportRevenue">0đ</h3><p>Doanh thu đơn hoàn tất</p></div>
+    <div class="stat-card"><h3>Excel</h3><p>Xuất dữ liệu đơn hàng</p></div>
+    <div class="stat-card"><h3>Flow</h3><p>Chờ duyệt → duyệt → phân tài xế</p></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-layer-group"></i> Thống kê theo trạng thái</h2>
+      <div class="admin-actions">
+        <button class="btn btn-secondary" type="button" onclick="loadOrdersReport()"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+        <button class="btn btn-primary" type="button" onclick="exportOrdersExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button>
+      </div>
+    </div>
+    <div class="report-status-grid" id="reportStatusGrid"><p>Đang tải thống kê...</p></div>
+  </section>
+
+  <section class="table-box company-table">
+    <div class="section-head">
+      <h2><i class="fa-solid fa-table-list"></i> Danh sách đơn hàng</h2>
+      <a href="admin.html">Duyệt đơn trong Admin ></a>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Mã đơn</th><th>Khách hàng</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Trạng thái</th><th>Tài xế</th><th>Tuyến</th></tr>
+      </thead>
+      <tbody id="reportOrderTableBody"><tr><td colspan="7">Đang tải dữ liệu...</td></tr></tbody>
+    </table>
+  </section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiPort Mart - Liên hệ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="top">
+<div class="top-line"></div>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">LOGIPORT<span>MART.COM</span></div>
+    <a class="header-action" href="index.html"><span class="icon"><i class="fa-solid fa-house"></i></span><div>Trang<br>chủ</div></a>
+    <div class="search"><input type="text" placeholder="Tìm sản phẩm, mã đơn, dịch vụ..."><button type="button"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+    <div class="header-action"><span class="icon"><i class="fa-solid fa-phone"></i></span><div>Hotline<br>1900.5301</div></div>
+    <a class="header-action header-action-button" href="cart.html"><span class="icon"><i class="fa-solid fa-cart-shopping"></i></span><div>Giỏ hàng<br><span id="cartCount">0</span> sản phẩm</div></a>
+    <a class="header-action auth-action" id="authAction" href="profile.html" onclick="toggleUserInfo(event)"><span class="icon"><i class="fa-solid fa-user"></i></span><div id="authActionText">Đăng<br>nhập</div></a>
+    <button id="logoutButtonHeader" class="btn btn-secondary logout-button" type="button" onclick="clearAuth()" style="display:none; margin-left:12px;">Đăng xuất</button>
+  </div>
+</header>
+<nav class="sub-nav public-nav">
+  <div class="sub-nav-inner">
+    <a href="index.html"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <a href="index.html#products"><i class="fa-solid fa-cart-shopping"></i> Sản phẩm</a>
+    <a href="logistics.html"><i class="fa-solid fa-truck-fast"></i> Dịch vụ Logistics</a>
+    <a href="orders.html"><i class="fa-solid fa-clipboard-list"></i> Tra cứu đơn hàng</a>
+    <a class="active" href="contact.html"><i class="fa-solid fa-headset"></i> Liên hệ</a>
+    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+  </div>
+</nav>
+
+<main class="main">
+  <section class="page-hero contact-hero"><div><span><i class="fa-solid fa-headset"></i></span><h1>Liên hệ LogiPort Mart</h1><p>Thông tin doanh nghiệp, tư vấn bán hàng và dịch vụ logistics.</p></div></section>
+  <section class="panel-grid">
+    <div class="panel company-contact-card"><h3>Thông tin doanh nghiệp</h3><div class="mini-table"><div><strong>Tên công ty</strong><span>Công ty TNHH LogiPort Mart</span></div><div><strong>Logo</strong><span>LOGIPORT MART.COM</span></div><div><strong>Địa chỉ</strong><span>69 Nguyễn Gia Trí, Bình Thạnh, TP.HCM</span></div><div><strong>Số điện thoại</strong><span>1900.5301</span></div><div><strong>Email</strong><span>support@logiportmart.vn</span></div><div><strong>Mã số thuế</strong><span>0319998888</span></div><div><strong>Khu vực hoạt động</strong><span>Cảng / kho / nội địa / quốc tế</span></div></div></div>
+    <div class="panel"><h3>Gửi yêu cầu liên hệ</h3><div class="form-row"><input id="contactName" placeholder="Họ tên"><input id="contactPhone" placeholder="Số điện thoại"></div><input id="contactEmail" placeholder="Email"><br><br><select id="contactTopic"><option>Tư vấn mua hàng</option><option>Yêu cầu logistics</option><option>Báo giá vận chuyển</option><option>Hỗ trợ đơn hàng</option></select><br><br><textarea id="contactMessage" rows="5" placeholder="Nội dung cần hỗ trợ"></textarea><br><br><button class="btn btn-primary" onclick="submitContactRequest()" type="button">Gửi liên hệ</button><div class="result-box" id="contactResult"></div></div>
+  </section>
+  <section class="section"><div class="section-head"><h2>Bộ phận hỗ trợ</h2></div><div class="ops-suite-grid"><div class="ops-card"><i class="fa-solid fa-cart-shopping"></i><h3>Bán hàng</h3><p>Tư vấn sản phẩm, giá bán, tồn kho.</p></div><div class="ops-card"><i class="fa-solid fa-truck-fast"></i><h3>Điều phối</h3><p>Vận chuyển, tài xế, tuyến giao.</p></div><div class="ops-card"><i class="fa-solid fa-warehouse"></i><h3>Kho vận</h3><p>Đóng gói, lưu kho, container.</p></div><div class="ops-card"><i class="fa-solid fa-file-invoice"></i><h3>Kế toán</h3><p>Hóa đơn, thanh toán, hợp đồng.</p></div></div></section>
+</main><footer class="pv-footer">
+  <div class="pv-footer-inner">
+    <div class="pv-footer-col">
+      <h3>Hỗ trợ Khách hàng</h3>
+      <a href="orders.html">Tra cứu đơn hàng</a>
+      <a href="quote.html">Báo giá vận chuyển</a>
+      <a href="cart.html">Mua hàng online</a>
+      <a href="logistics.html">Dịch vụ logistics</a>
+      <a href="profile.html">Khách hàng thân thiết</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Chính sách mua hàng</h3>
+      <a href="javascript:void(0)">Điều kiện giao dịch chung</a>
+      <a href="javascript:void(0)">Chính sách bảo hành</a>
+      <a href="returns.html">Chính sách đổi trả</a>
+      <a href="javascript:void(0)">Chính sách thanh toán</a>
+      <a href="javascript:void(0)">Giao hàng và lắp đặt tại nhà</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Thông tin LogiPort</h3>
+      <a href="contact.html">Giới thiệu công ty</a>
+      <a href="news.html">Tin tức công nghệ</a>
+      <a href="logistics.html">Hệ thống kho vận</a>
+      <a href="quote.html">Báo giá doanh nghiệp</a>
+      <a href="contact.html">Tuyển dụng</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Cộng đồng LogiPort</h3>
+      <a href="tel:19005301"><i class="fa-solid fa-phone"></i> Gọi mua hàng 1900.5301</a>
+      <a href="tel:18006868"><i class="fa-solid fa-headset"></i> Chăm sóc 1800.6868</a>
+      <a href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook LogiPort</a>
+      <a href="https://zalo.me/" target="_blank"><i class="fa-solid fa-comment-dots"></i> Zalo LogiPort</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Email liên hệ</h3>
+      <p>Hỗ trợ khách hàng:<br><a href="mailto:cskh@logiportmart.vn">cskh@logiportmart.vn</a></p>
+      <p>Liên hệ báo giá:<br><a href="mailto:baogia@logiportmart.vn">baogia@logiportmart.vn</a></p>
+      <p>Hợp tác phát triển:<br><a href="mailto:hoptac@logiportmart.vn">hoptac@logiportmart.vn</a></p>
+    </div>
+  </div>
+  <div class="pv-payment-row">
+    <div>
+      <h3>Phương thức thanh toán</h3>
+      <div class="pv-pay-icons"><span><i class="fa-solid fa-qrcode"></i> QR Code</span><span><i class="fa-solid fa-money-bill-wave"></i> Tiền mặt</span><span><i class="fa-solid fa-credit-card"></i> Trả góp</span><span><i class="fa-solid fa-building-columns"></i> Internet Banking</span></div>
+    </div>
+    <div>
+      <h3>Danh sách ngân hàng thanh toán online</h3>
+      <div class="pv-bank-list"><span>Vietcombank</span><span>BIDV</span><span>MB Bank</span><span>ACB</span><span>Techcombank</span><span>VPBank</span><span>TPBank</span><span>OCB</span></div>
+    </div>
+  </div>
+  <div class="pv-company-bottom">
+    <div>
+      <h3>CÔNG TY TNHH LOGIPORT MART</h3>
+      <p>© 2026 LogiPort Mart. Mã số thuế: 0319998888. Website thuộc quyền sở hữu của Công ty TNHH LogiPort Mart.</p>
+    </div>
+    <div>
+      <p><strong>Địa chỉ trụ sở chính:</strong><br>69 Nguyễn Gia Trí, Phường 25, Quận Bình Thạnh, Thành phố Hồ Chí Minh, Việt Nam</p>
+      <p><strong>Kho vận:</strong> Cảng Cát Lái · Kho Thủ Đức · Kho Bình Dương</p>
+    </div>
+    <div class="pv-badges"><span>ĐÃ THÔNG BÁO<br>BỘ CÔNG THƯƠNG</span><span>DMCA<br>PROTECTED</span></div>
+  </div>
+</footer>
+<div class="pv-contact-float">
+  <a href="#top" class="pv-top"><i class="fa-solid fa-chevron-up"></i></a>
+  <a href="tel:18006868" class="pv-call">1800 6868 <i class="fa-solid fa-phone"></i></a>
+  <a href="https://zalo.me/" target="_blank" class="pv-zalo">Zalo</a>
+  <a href="mailto:cskh@logiportmart.vn" class="pv-chat">Chat với<br><strong>Tư vấn viên</strong></a>
+</div><script src="script.js"></script></body></html>

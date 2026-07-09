@@ -1,0 +1,16 @@
+BẢN SẠCH ĐƠN HÀNG
+
+Đã xóa toàn bộ đơn mẫu trong database:
+- orders = 0
+- delivery_assignments = 0
+
+Đã chỉnh trang Admin:
+- Không còn tự tạo/hiện 100 đơn LGDEMO khi API rỗng.
+- Nút cũ đã đổi thành "Tải lại đơn hàng".
+- Nếu chưa tự tạo đơn mới, bảng Admin/Driver/Report sẽ trống.
+
+Khi demo:
+1. Đăng nhập khách hàng và tự đặt 5-8 đơn.
+2. Qua Admin/Staff duyệt đơn.
+3. Vào Logistics/Greedy để gom/chia tuyến.
+4. Qua tài xế để nhận đơn -> đang giao -> hoàn tất.

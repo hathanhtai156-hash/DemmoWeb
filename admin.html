@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiPort Mart - Trung tâm Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-required-roles="admin">
+<div class="top-line"></div>
+<header class="header internal-header">
+  <div class="header-inner">
+    <div class="logo">LOGIPORT<span>CONTROL CENTER</span></div>
+    <button class="menu-btn" type="button"><i class="fa-solid fa-building-shield"></i> Admin</button>
+    <div class="search">
+      <input id="adminSearchInput" type="text" placeholder="Tìm đơn hàng, tài khoản, tài xế, trạng thái..." oninput="filterAdminData()">
+      <button type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <a class="header-action auth-action" id="authAction" href="profile.html" onclick="toggleUserInfo(event)"><span class="icon"><i class="fa-solid fa-user-tie"></i></span><div id="authActionText">Đăng<br>nhập</div></a>
+    <button id="logoutButtonHeader" class="btn btn-secondary logout-button" type="button" onclick="clearAuth()" style="display:none; margin-left:12px;">Đăng xuất</button>
+    <a class="header-action header-action-button notification-action" href="#adminOrderTable"><span class="icon"><i class="fa-solid fa-bell"></i></span><div>Đơn mới<br><span id="notificationCount">0</span></div></a>
+  </div>
+</header>
+<nav class="sub-nav internal-nav">
+  <div class="sub-nav-inner">
+    <a href="index.html"><i class="fa-solid fa-store"></i> Web bán hàng</a>
+    <a class="active" href="admin.html"><i class="fa-solid fa-building-shield"></i> Admin</a>
+    <a id="staffLink" href="staff.html" data-role-link="admin,staff"><i class="fa-solid fa-clipboard-check"></i> Staff</a>
+    <a id="driverLink" href="driver.html" data-role-link="driver"><i class="fa-solid fa-truck-fast"></i> Tài xế</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+  </div>
+</nav>
+
+<main class="main company-main">
+  <div class="admin-guard" id="adminGuard" aria-hidden="true">
+    <div class="guard-card">
+      <h2>Trang Admin chỉ dành cho quản trị</h2>
+      <p>Vui lòng đăng nhập bằng tài khoản <strong>admin / admin123</strong> để vào trung tâm điều hành công ty.</p>
+      <a class="btn btn-primary" href="auth.html">Đăng nhập Admin</a>
+    </div>
+  </div>
+
+  <section class="page-hero company-hero">
+    <div>
+      <span><i class="fa-solid fa-building-shield"></i></span>
+      <h1>Trung tâm điều hành LogiPort</h1>
+      <p>Admin quản lý đơn hàng theo từng trạng thái: chờ xác nhận, đã duyệt, đóng gói, sẵn sàng giao và theo dõi tài xế.</p>
+    </div>
+    <div class="hero-orbit"><i class="fa-solid fa-chart-line"></i></div>
+  </section>
+
+
+  
+
+  <section class="dashboard-grid company-dashboard">
+    <div class="stat-card"><h3 id="adminTotalOrders">0</h3><p>Tổng đơn</p></div>
+    <div class="stat-card"><h3 id="adminPendingOrders">0</h3><p>Đơn chờ duyệt</p></div>
+    <div class="stat-card"><h3 id="adminApprovedOrders">0</h3><p>Đang xử lý</p></div>
+    <div class="stat-card"><h3 id="adminTotalUsers">0</h3><p>Tài khoản hệ thống</p></div>
+  </section>
+
+  
+
+  
+
+
+  <section class="section approval-center" id="approvalCenter">
+    <div class="section-head approval-head">
+      <div>
+        <h2><i class="fa-solid fa-clipboard-check"></i> Bàn duyệt đơn mới</h2>
+        
+      </div>
+      <div class="admin-actions approval-toolbar">
+        <button class="btn btn-secondary" type="button" onclick="loadAdminOrders()"><i class="fa-solid fa-rotate"></i> Tải đơn mới</button>
+        <button class="btn btn-primary" type="button" onclick="approveAllPendingOrders()"><i class="fa-solid fa-check-double"></i> Duyệt tất cả đơn chờ</button>
+      </div>
+    </div>
+    <div class="approval-summary" id="approvalSummary">
+      <div><strong>0</strong><span>Chờ duyệt</span></div>
+      <div><strong>0</strong><span>Đã duyệt</span></div>
+      <div><strong>0</strong><span>Đang giao</span></div>
+      <div><strong>0</strong><span>Đã hủy/từ chối</span></div>
+    </div>
+    <div class="approval-inbox" id="approvalInbox">
+      <p>Đang tải danh sách đơn cần duyệt...</p>
+    </div>
+  </section>
+
+
+  <section class="section shopee-dispatch-panel" id="shopeeMiniDispatch">
+    <div class="section-head">
+      <div>
+        <h2><i class="fa-solid fa-truck-ramp-box"></i> Điều phối kiểu Shopee mini: tải 100kg + Greedy</h2>
+        <p class="section-subtitle">Hệ thống tự đóng gói đơn đã duyệt, gom vào xe tải tối đa 100kg, chia theo địa chỉ cụ thể và sắp xếp điểm giao ngắn nhất cho tài xế.</p>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" type="button" onclick="autoDispatchShopeePlan()"><i class="fa-solid fa-wand-magic-sparkles"></i> Chạy Auto kho + điều phối</button>
+        <button class="btn btn-secondary" type="button" onclick="loadShopeeMiniPlan('admin')"><i class="fa-solid fa-route"></i> Tính tuyến</button>
+      </div>
+    </div>
+    <div class="shopee-rule-box">
+      <div><strong>Quy tắc xe tải:</strong> 1 chuyến tối đa <b>100kg</b>. Đơn quá tải sẽ tự tách sang chuyến mới.</div>
+      <div><strong>Quy tắc Greedy:</strong> từ kho chọn điểm giao gần nhất, sau đó tiếp tục chọn điểm gần nhất tiếp theo.</div>
+    </div>
+    <div id="shopeePlanBox" class="shopee-plan-box"><p>Đang tải kế hoạch điều phối...</p></div>
+  </section>
+
+
+  
+
+  
+
+  
+
+  <section class="table-box company-table" id="adminOrderTable">
+    <div class="section-head"><h2><i class="fa-solid fa-receipt"></i> Bảng đơn hàng công ty</h2><a href="#" onclick="loadAdminOrders(); return false;">Cập nhật</a></div>
+    <div id="adminOrderTabs" class="admin-order-tabs">
+      <button type="button" class="admin-order-tab active" onclick="setAdminOrderTab('pending')"><i class="fa-solid fa-hourglass-half"></i><span>Chờ xác nhận</span><b>0</b></button>
+      <button type="button" class="admin-order-tab" onclick="setAdminOrderTab('approved')"><i class="fa-solid fa-circle-check"></i><span>Đã duyệt</span><b>0</b></button>
+      <button type="button" class="admin-order-tab" onclick="setAdminOrderTab('processing')"><i class="fa-solid fa-box-open"></i><span>Đóng gói/kho</span><b>0</b></button>
+      <button type="button" class="admin-order-tab" onclick="setAdminOrderTab('ready')"><i class="fa-solid fa-truck-ramp-box"></i><span>Sẵn sàng giao</span><b>0</b></button>
+      <button type="button" class="admin-order-tab" onclick="setAdminOrderTab('driver')"><i class="fa-solid fa-truck-fast"></i><span>Tài xế xử lý</span><b>0</b></button>
+      <button type="button" class="admin-order-tab" onclick="setAdminOrderTab('all')"><i class="fa-solid fa-table-list"></i><span>Tất cả</span><b>0</b></button>
+    </div>
+    <table>
+      <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Bộ phận / Kg / Khu</th><th>Trạng thái / Chuyến</th><th>Tài xế / Tuyến</th><th>Tổng tiền</th><th>Thao tác</th></tr></thead>
+      <tbody id="adminOrderTableBody"><tr><td colspan="7">Đang tải đơn hàng...</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2><i class="fa-solid fa-address-book"></i> Quản lý tài khoản công ty</h2><a href="#" onclick="loadUserList(); return false;">Tải lại</a></div>
+    <div class="admin-user-form" id="adminUserForm">
+      <input id="adminUserDisplayName" placeholder="Họ tên">
+      <input id="adminUsername" placeholder="Username">
+      <input id="adminUserPassword" type="password" placeholder="Mật khẩu">
+      <select id="adminUserRole"><option value="customer">Khách hàng</option><option value="staff">Staff vận hành</option><option value="driver">Tài xế</option><option value="admin">Admin</option></select>
+      <button class="btn btn-primary" type="button" onclick="createAdminUser()"><i class="fa-solid fa-user-plus"></i> Tạo tài khoản</button>
+    </div>
+    <div class="result-box" id="adminUserResult"></div>
+    <div class="user-list" id="userListContainer"><p>Đăng nhập Admin để xem danh sách tài khoản.</p></div>
+  </section>
+
+
+
+  <section class="section customer-data-panel admin-customer-data" id="customerDataCenter">
+    <div class="section-head">
+      <div>
+        <h2><i class="fa-solid fa-address-book"></i> Dữ liệu khách hàng & xuất TXT</h2>
+        <p class="section-subtitle">Lưu tập trung hồ sơ khách hàng: email, số điện thoại, công ty, địa chỉ và ghi chú chăm sóc.</p>
+      </div>
+      <div class="admin-actions">
+        <input id="customerSearchInput" class="inline-report-search" type="text" placeholder="Tìm khách hàng, email, SĐT..." oninput="loadCustomerRecords()">
+        <button class="btn btn-secondary" type="button" onclick="loadCustomerRecords()"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+        <button class="btn btn-primary" type="button" onclick="exportCustomerTxt()"><i class="fa-solid fa-file-lines"></i> Xuất TXT</button>
+      </div>
+    </div>
+    <div class="customer-data-summary">
+      <div><strong id="customerRecordsTotal">0</strong><span>Tài khoản đã lưu</span></div>
+      <div><strong>TXT</strong><span>Tải danh sách khách hàng</span></div>
+      <div><strong>CRM</strong><span>Phục vụ chăm sóc & đối soát</span></div>
+    </div>
+    <div class="table-scroll">
+      <table class="customer-table">
+        <thead><tr><th>Mã</th><th>Khách hàng</th><th>Liên hệ</th><th>Công ty</th><th>Địa chỉ</th><th>Ghi chú</th><th>Cập nhật</th></tr></thead>
+        <tbody id="customerRecordsBody"><tr><td colspan="7">Đang tải dữ liệu khách hàng...</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+<section class="section" id="returnApprovalCenter">
+    <div class="section-head">
+      <div>
+        <h2><i class="fa-solid fa-rotate-left"></i> Trung tâm duyệt đổi trả</h2>
+        <p class="section-subtitle">Xem và xử lý yêu cầu đổi trả của khách hàng như Shopee mini.</p>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-secondary" type="button" onclick="renderReturnAdminList()"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+        <a class="btn btn-primary" href="returns.html"><i class="fa-solid fa-plus"></i> Mở trang đổi trả</a>
+      </div>
+    </div>
+    <div id="returnAdminSummary" class="dashboard-grid compact-dashboard"></div>
+    <div id="returnAdminList" class="return-admin-list"></div>
+  </section>
+</main>
+
+
+<footer class="pv-footer">
+  <div class="pv-footer-inner">
+    <div class="pv-footer-col">
+      <h3>Hỗ trợ Khách hàng</h3>
+      <a href="orders.html">Tra cứu đơn hàng</a>
+      <a href="quote.html">Báo giá vận chuyển</a>
+      <a href="cart.html">Mua hàng online</a>
+      <a href="logistics.html">Dịch vụ logistics</a>
+      <a href="profile.html">Khách hàng thân thiết</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Chính sách mua hàng</h3>
+      <a href="javascript:void(0)">Điều kiện giao dịch chung</a>
+      <a href="javascript:void(0)">Chính sách bảo hành</a>
+      <a href="javascript:void(0)">Chính sách đổi trả</a>
+      <a href="javascript:void(0)">Chính sách thanh toán</a>
+      <a href="javascript:void(0)">Giao hàng và lắp đặt tại nhà</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Thông tin LogiPort</h3>
+      <a href="contact.html">Giới thiệu công ty</a>
+      <a href="news.html">Tin tức công nghệ</a>
+      <a href="logistics.html">Hệ thống kho vận</a>
+      <a href="quote.html">Báo giá doanh nghiệp</a>
+      <a href="contact.html">Tuyển dụng</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Cộng đồng LogiPort</h3>
+      <a href="tel:19005301"><i class="fa-solid fa-phone"></i> Gọi mua hàng 1900.5301</a>
+      <a href="tel:18006868"><i class="fa-solid fa-headset"></i> Chăm sóc 1800.6868</a>
+      <a href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook LogiPort</a>
+      <a href="https://zalo.me/" target="_blank"><i class="fa-solid fa-comment-dots"></i> Zalo LogiPort</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Email liên hệ</h3>
+      <p>Hỗ trợ khách hàng:<br><a href="mailto:cskh@logiportmart.vn">cskh@logiportmart.vn</a></p>
+      <p>Liên hệ báo giá:<br><a href="mailto:baogia@logiportmart.vn">baogia@logiportmart.vn</a></p>
+      <p>Hợp tác phát triển:<br><a href="mailto:hoptac@logiportmart.vn">hoptac@logiportmart.vn</a></p>
+    </div>
+  </div>
+  <div class="pv-payment-row">
+    <div>
+      <h3>Phương thức thanh toán</h3>
+      <div class="pv-pay-icons"><span><i class="fa-solid fa-qrcode"></i> QR Code</span><span><i class="fa-solid fa-money-bill-wave"></i> Tiền mặt</span><span><i class="fa-solid fa-credit-card"></i> Trả góp</span><span><i class="fa-solid fa-building-columns"></i> Internet Banking</span></div>
+    </div>
+    <div>
+      <h3>Danh sách ngân hàng thanh toán online</h3>
+      <div class="pv-bank-list"><span>Vietcombank</span><span>BIDV</span><span>MB Bank</span><span>ACB</span><span>Techcombank</span><span>VPBank</span><span>TPBank</span><span>OCB</span></div>
+    </div>
+  </div>
+  <div class="pv-company-bottom">
+    <div>
+      <h3>CÔNG TY TNHH LOGIPORT MART</h3>
+      <p>© 2026 LogiPort Mart. Mã số thuế: 0319998888. Website thuộc quyền sở hữu của Công ty TNHH LogiPort Mart.</p>
+    </div>
+    <div>
+      <p><strong>Địa chỉ trụ sở chính:</strong><br>69 Nguyễn Gia Trí, Phường 25, Quận Bình Thạnh, Thành phố Hồ Chí Minh, Việt Nam</p>
+      <p><strong>Kho vận:</strong> Cảng Cát Lái · Kho Thủ Đức · Kho Bình Dương</p>
+    </div>
+    <div class="pv-badges"><span>ĐÃ THÔNG BÁO<br>BỘ CÔNG THƯƠNG</span><span>DMCA<br>PROTECTED</span></div>
+  </div>
+</footer>
+<div class="pv-contact-float">
+  <a href="#top" class="pv-top"><i class="fa-solid fa-chevron-up"></i></a>
+  <a href="tel:18006868" class="pv-call">1800 6868 <i class="fa-solid fa-phone"></i></a>
+  <a href="https://zalo.me/" target="_blank" class="pv-zalo">Zalo</a>
+  <a href="mailto:cskh@logiportmart.vn" class="pv-chat">Chat với<br><strong>Tư vấn viên</strong></a>
+</div>
+<script src="script.js"></script>
+<script>
+(function(){
+  function getReturns(){
+    try { return JSON.parse(localStorage.getItem('returnRequests') || '[]'); } catch(e){ return []; }
+  }
+  function saveReturns(list){ localStorage.setItem('returnRequests', JSON.stringify(list)); }
+  window.renderReturnAdminList = function(){
+    const listBox = document.getElementById('returnAdminList');
+    const summary = document.getElementById('returnAdminSummary');
+    if(!listBox || !summary) return;
+    const list = getReturns();
+    const pending = list.filter(x => String(x.status || '').includes('Chờ') || String(x.status || '').includes('Đã tiếp nhận')).length;
+    const approved = list.filter(x => String(x.status || '').includes('Duyệt')).length;
+    const rejected = list.filter(x => String(x.status || '').includes('Từ chối')).length;
+    summary.innerHTML = `
+      <div class="stat-card"><h3>${list.length}</h3><p>Tổng yêu cầu đổi trả</p></div>
+      <div class="stat-card"><h3>${pending}</h3><p>Chờ duyệt</p></div>
+      <div class="stat-card"><h3>${approved}</h3><p>Đã duyệt</p></div>
+      <div class="stat-card"><h3>${rejected}</h3><p>Từ chối</p></div>
+    `;
+    if(!list.length){ listBox.innerHTML = '<p class="empty-note">Chưa có yêu cầu đổi trả nào. Khách tạo ở trang Đổi trả.</p>'; return; }
+    listBox.innerHTML = list.map(r => `
+      <div class="return-admin-card">
+        <div>
+          <strong>${r.id || 'RT-'}</strong>
+          <span>Đơn: ${r.orderId || 'Chưa nhập'} · ${r.type || 'Đổi sản phẩm'} · ${r.condition || 'Chưa rõ'}</span>
+          <p>${r.reason || 'Không có ghi chú'}</p>
+          <small>${r.createdAt || ''}</small>
+        </div>
+        <div class="return-admin-actions">
+          <b>${r.status || 'Đã tiếp nhận'}</b>
+          <button class="btn btn-primary" type="button" onclick="updateReturnStatus('${r.id}','Đã duyệt đổi trả')">Duyệt</button>
+          <button class="btn btn-secondary" type="button" onclick="updateReturnStatus('${r.id}','Yêu cầu bổ sung ảnh')">Bổ sung ảnh</button>
+          <button class="btn btn-red" type="button" onclick="updateReturnStatus('${r.id}','Từ chối đổi trả')">Từ chối</button>
+        </div>
+      </div>
+    `).join('');
+  };
+  window.updateReturnStatus = function(id, status){
+    const list = getReturns();
+    const idx = list.findIndex(x => String(x.id) === String(id));
+    if(idx >= 0){
+      list[idx].status = status;
+      list[idx].updatedAt = new Date().toLocaleString('vi-VN');
+      saveReturns(list);
+    }
+    renderReturnAdminList();
+  };
+  window.addEventListener('DOMContentLoaded', renderReturnAdminList);
+})();
+</script>
+
+</body>
+</html>

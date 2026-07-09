@@ -1,0 +1,11 @@
+node_modules/
+.env
+.npm-cache/
+.xdg-data/
+.xdg-config/
+.xdg-cache/
+.localappdata/
+.appdata/
+.vercel/
+*.log
+.DS_Store

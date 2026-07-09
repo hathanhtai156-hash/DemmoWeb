@@ -1,0 +1,25 @@
+KỊCH BẢN DEMO CHẮC ĂN
+
+Tài khoản:
+- Admin: admin / admin123
+- Staff: nhanvien / nv123456
+- Tài xế: taixe / tx123456
+
+Luồng demo nhanh:
+1. Mở web, đăng nhập Admin.
+2. Vào Admin/Logistics để xem 100 đơn đã được chia cho Tài xế Demo.
+3. Đăng xuất Admin.
+4. Đăng nhập Tài xế: taixe / tx123456.
+5. Vào trang Tài xế.
+6. Đơn sẽ hiện ở trạng thái Chờ nhận.
+7. Bấm: Nhận đơn.
+8. Nút đổi thành: Đang giao.
+9. Bấm: Đang giao.
+10. Nút đổi thành: Hoàn tất.
+11. Bấm: Hoàn tất.
+
+Lưu ý:
+- Admin/Staff không có quyền bấm Hoàn tất giao hàng.
+- Admin/Staff chỉ duyệt đơn, đóng gói, sẵn sàng giao, phân tài xế.
+- Tài xế mới đổi được trạng thái giao hàng.
+- Bản demo chỉ dùng 1 tài xế: Tài xế Demo, để tránh bị lệch tài khoản khi demo.

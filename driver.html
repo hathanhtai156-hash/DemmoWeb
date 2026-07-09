@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiPort Mart - Tài xế</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-required-roles="driver">
+<div class="top-line"></div>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">LOGIPORT<span>DRIVER</span></div>
+    <button class="menu-btn"><i class="fa-solid fa-truck-fast"></i> Tài xế</button>
+    <div class="search"><input id="driverSearch" placeholder="Tìm mã đơn hoặc điểm giao..." oninput="renderDriverOrders()"><button><i class="fa-solid fa-magnifying-glass"></i></button></div>
+    <a class="header-action auth-action" id="authAction" href="profile.html" onclick="toggleUserInfo(event)"><span class="icon"><i class="fa-solid fa-user"></i></span><div id="authActionText">Đăng<br>nhập</div></a>
+    <button id="logoutButtonHeader" class="btn btn-secondary logout-button" type="button" onclick="clearAuth()" style="display:none; margin-left:12px;">Đăng xuất</button>
+  </div>
+</header>
+<nav class="sub-nav"><div class="sub-nav-inner">
+  <a href="index.html"><i class="fa-solid fa-cart-shopping"></i> Sản phẩm</a>
+  <a href="logistics.html"><i class="fa-solid fa-truck-fast"></i> Logistics</a>
+  <a href="orders.html"><i class="fa-solid fa-clipboard-list"></i> Tra cứu đơn</a>
+  <a class="active" href="driver.html"><i class="fa-solid fa-id-card"></i> Tài xế</a>
+  <a id="staffLink" href="staff.html" data-role-link="admin,staff"><i class="fa-solid fa-clipboard-check"></i> Staff</a>
+  <a id="adminLink" href="admin.html" data-role-link="admin"><i class="fa-solid fa-user-shield"></i> Admin</a>
+</div></nav>
+<main class="main">
+  <div class="admin-guard" id="adminGuard" aria-hidden="true">
+    <div class="guard-card"><h2>Trang tài xế</h2><p>Đăng nhập tài khoản tài xế để quản lý đơn giao hàng.</p><a class="btn btn-primary" href="auth.html">Đăng nhập tài xế</a></div>
+  </div>
+  <section class="page-hero cart-hero driver-hero">
+    <div>
+      <span><i class="fa-solid fa-route"></i></span>
+      <h1>Bảng nhận đơn của tài xế</h1>
+      <p>Quản lý các đơn đã được phân công và cập nhật trạng thái giao hàng.</p>
+    </div>
+    <div class="hero-orbit"><i class="fa-solid fa-truck-fast"></i></div>
+  </section>
+
+  <section class="driver-kpi-grid">
+    <div class="driver-kpi"><i class="fa-solid fa-clipboard-check"></i><span>Tổng đơn</span><strong id="driverTotalOrders">0</strong></div>
+    <div class="driver-kpi"><i class="fa-solid fa-hourglass-half"></i><span>Chờ nhận</span><strong id="driverPendingOrders">0</strong></div>
+    <div class="driver-kpi"><i class="fa-solid fa-truck-ramp-box"></i><span>Đang giao</span><strong id="driverShippingOrders">0</strong></div>
+    <div class="driver-kpi"><i class="fa-solid fa-road"></i><span>Km dự kiến</span><strong id="driverEstimatedKm">0 km</strong></div>
+  </section>
+<section class="driver-route-workbench">
+    <div class="section-head driver-section-head">
+      <div>
+        <span class="eyebrow">Tuyến giao hôm nay</span>
+        <h2>Greedy được tích hợp trong công việc tài xế</h2>
+        <p>Hệ thống lấy đơn đã phân cho tài xế, tự sắp xếp thứ tự giao. Tài xế chỉ cần đi theo tuyến và cập nhật trạng thái.</p>
+      </div>
+      <button class="btn btn-secondary" type="button" onclick="loadDriverIntegratedGreedy()"><i class="fa-solid fa-rotate"></i> Cập nhật tuyến</button>
+    </div>
+    <div id="driverGreedyIntegrated" class="driver-greedy-integrated"></div>
+  </section>
+
+  <section class="driver-grid driver-grid-final driver-work-columns">
+    <div class="driver-card driver-order-panel-final driver-active-panel">
+      <div class="driver-panel-title-row">
+        <div>
+          <span class="eyebrow">Đang xử lý</span>
+          <h3>Đơn giao của tài xế</h3>
+        </div>
+        <small>Nhận đơn → Đang trên đường đến → Hoàn tất</small>
+      </div>
+      <div id="driverOrdersList" class="admin-list driver-orders-list"><p>Đăng nhập tài khoản tài xế để xem đơn.</p></div>
+    </div>
+    <div class="driver-card driver-order-panel-final driver-history-panel">
+      <div class="driver-panel-title-row">
+        <div>
+          <span class="eyebrow">Lưu riêng</span>
+          <h3>Đơn đã giao</h3>
+        </div>
+        <small>Tự chuyển qua đây sau khi bấm Hoàn tất</small>
+      </div>
+      <div id="driverDeliveredList" class="driver-delivered-list"><p>Chưa có đơn hoàn tất.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="driver-clean-footer">LogiPort Driver · Tuyến giao · Nhận đơn · Đang giao · Hoàn tất</footer>
+
+<div class="pv-contact-float">
+  <a href="#top" class="pv-top"><i class="fa-solid fa-chevron-up"></i></a>
+  <a href="tel:18006868" class="pv-call">1800 6868 <i class="fa-solid fa-phone"></i></a>
+  <a href="https://zalo.me/" target="_blank" class="pv-zalo">Zalo</a>
+  <a href="mailto:cskh@logiportmart.vn" class="pv-chat">Chat với<br><strong>Tư vấn viên</strong></a>
+</div>
+<script src="script.js"></script>
+<script src="driver-final.js"></script>
+<script>window.addEventListener('DOMContentLoaded',()=>{initAuth();initCart();renderDriverOrders();});</script>
+</body>
+</html>

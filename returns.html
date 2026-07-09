@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiPort Mart - Đổi trả đơn hàng</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="top-line"></div>
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html">LOGIPORT<span>MART.COM</span></a>
+    <a class="menu-btn" href="index.html"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <div class="search"><input id="searchInput" type="text" placeholder="Nhập mã đơn cần đổi trả hoặc tra cứu..."><button onclick="location.href='orders.html'"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+    <div class="header-action"><span class="icon"><i class="fa-solid fa-phone"></i></span><div>Hotline<br>1900.5301</div></div>
+    <a class="header-action header-action-button" href="orders.html"><span class="icon"><i class="fa-solid fa-box"></i></span><div>Tra cứu<br>đơn hàng</div></a>
+    <a class="header-action header-action-button" href="cart.html"><span class="icon"><i class="fa-solid fa-cart-shopping"></i></span><div>Giỏ hàng<br><span id="cartCount">0</span> sản phẩm</div></a>
+    <a class="header-action auth-action" href="auth.html"><span class="icon"><i class="fa-solid fa-user"></i></span><div id="authActionText">Đăng<br>nhập</div></a>
+  </div>
+</header>
+<nav class="sub-nav">
+  <div class="sub-nav-inner">
+    <a href="index.html"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <a href="index.html#electronics"><i class="fa-solid fa-cart-shopping"></i> Sản phẩm</a>
+    <a href="logistics.html"><i class="fa-solid fa-truck-fast"></i> Dịch vụ Logistics</a>
+    <a href="orders.html"><i class="fa-solid fa-clipboard-list"></i> Tra cứu đơn hàng</a>
+    <a class="active" href="returns.html"><i class="fa-solid fa-rotate-left"></i> Đổi trả</a>
+    <a href="profile.html"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+  </div>
+</nav>
+<main class="main returns-main">
+  <section class="page-hero return-page-hero">
+    <span><i class="fa-solid fa-rotate-left"></i></span>
+    <h1>Trung tâm đổi trả LogiPort</h1>
+    <p>Gửi yêu cầu đổi trả theo mã đơn hàng. Yêu cầu sẽ được lưu lại trên trình duyệt để Admin/Staff kiểm tra .</p>
+  </section>
+  <section class="returns-layout">
+    <div class="panel return-form-card">
+      <h3><i class="fa-solid fa-file-pen"></i> Tạo yêu cầu đổi trả</h3>
+      <p>Điền thông tin đơn hàng, lý do và hình thức xử lý mong muốn.</p>
+      <div class="form-row">
+        <div><label>Mã đơn hàng</label><input id="returnOrderId" placeholder="Ví dụ: LG260704196"></div>
+        <div><label>Số điện thoại</label><input id="returnPhone" placeholder="Số điện thoại đặt hàng"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Hình thức xử lý</label><select id="returnType"><option>Đổi sản phẩm</option><option>Trả hàng hoàn tiền</option><option>Bảo hành sản phẩm</option><option>Bổ sung phụ kiện thiếu</option></select></div>
+        <div><label>Tình trạng hàng</label><select id="returnCondition"><option>Chưa sử dụng</option><option>Đã mở hộp</option><option>Lỗi kỹ thuật</option><option>Giao sai / thiếu hàng</option></select></div>
+      </div>
+      <label>Lý do đổi trả</label>
+      <textarea id="returnReason" rows="4" placeholder="Mô tả lỗi, tình trạng sản phẩm, yêu cầu hỗ trợ..."></textarea>
+      <div class="return-actions">
+        <button class="btn btn-primary" type="button" onclick="submitReturnRequest()"><i class="fa-solid fa-paper-plane"></i> Gửi yêu cầu</button>
+        <a class="btn btn-secondary" href="orders.html"><i class="fa-solid fa-location-dot"></i> Theo dõi đơn hàng</a>
+      </div>
+      <div class="result-box" id="returnResult"></div>
+    </div>
+    <aside class="panel return-policy-card">
+      <h3><i class="fa-solid fa-shield-halved"></i> Chính sách đổi trả</h3>
+      <div class="return-policy-step"><strong>01</strong><div><b>7 ngày đổi trả</b><span>Sản phẩm còn tem, hộp và phụ kiện.</span></div></div>
+      <div class="return-policy-step"><strong>02</strong><div><b>Kiểm tra tại kho</b><span>Staff xác minh đơn, tình trạng và tồn kho đổi mới.</span></div></div>
+      <div class="return-policy-step"><strong>03</strong><div><b>Theo dõi realtime</b><span>Tra cứu trạng thái bằng mã đơn ở trang Theo dõi đơn hàng.</span></div></div>
+      <a class="track-main-btn" href="orders.html"><i class="fa-solid fa-truck-fast"></i> Mở trang theo dõi đơn</a>
+    </aside>
+  </section>
+  <section class="section return-history-section">
+    <div class="section-head"><h2><i class="fa-solid fa-clock-rotate-left"></i> Yêu cầu đổi trả đã gửi</h2><button class="btn btn-secondary" onclick="clearReturnRequests()">Xóa lịch sử</button></div>
+    <div id="returnHistory" class="return-history-list"></div>
+  </section>
+</main>
+<footer class="pv-footer">
+  <div class="pv-footer-grid">
+    <div class="pv-footer-col"><h3>Hỗ trợ khách hàng</h3><a href="orders.html">Tra cứu đơn hàng</a><a href="returns.html">Đổi trả sản phẩm</a><a href="contact.html">Liên hệ hỗ trợ</a></div>
+    <div class="pv-footer-col"><h3>Thông tin LogiPort</h3><a href="contact.html">Giới thiệu công ty</a><a href="logistics.html">Dịch vụ Logistics</a><a href="quote.html">Báo giá vận chuyển</a></div>
+    <div class="pv-footer-col"><h3>Email liên hệ</h3><p>CSKH:<br><a href="mailto:cskh@logiportmart.vn">cskh@logiportmart.vn</a></p><p>Đổi trả:<br><a href="mailto:doitra@logiportmart.vn">doitra@logiportmart.vn</a></p></div>
+  </div>
+</footer>
+<script src="script.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', () => { try { initAuth(); } catch(e){} renderReturnRequests(); });
+  function getReturnRequests(){ return JSON.parse(localStorage.getItem('returnRequests') || '[]'); }
+  function saveReturnRequests(list){ localStorage.setItem('returnRequests', JSON.stringify(list)); }
+  function submitReturnRequest(){
+    const orderId = document.getElementById('returnOrderId').value.trim();
+    const phone = document.getElementById('returnPhone').value.trim();
+    const type = document.getElementById('returnType').value;
+    const condition = document.getElementById('returnCondition').value;
+    const reason = document.getElementById('returnReason').value.trim();
+    const result = document.getElementById('returnResult');
+    if(!orderId || !phone || !reason){ result.style.display='block'; result.innerHTML='Vui lòng nhập mã đơn, số điện thoại và lý do đổi trả.'; return; }
+    const req = { id:'RT'+Date.now(), orderId, phone, type, condition, reason, status:'Đã tiếp nhận', createdAt:new Date().toLocaleString('vi-VN') };
+    const list = getReturnRequests(); list.unshift(req); saveReturnRequests(list);
+    result.style.display='block'; result.innerHTML=`<strong>Gửi yêu cầu thành công!</strong><br>Mã yêu cầu: ${req.id}<br>Trạng thái: ${req.status}`;
+    document.getElementById('returnReason').value=''; renderReturnRequests();
+  }
+  function renderReturnRequests(){
+    const box = document.getElementById('returnHistory'); if(!box) return;
+    const list = getReturnRequests();
+    if(!list.length){ box.innerHTML='<p class="empty-note">Chưa có yêu cầu đổi trả nào.</p>'; return; }
+    box.innerHTML = list.map(r => `<div class="return-request-card"><div><strong>${r.id}</strong><span>Đơn: ${r.orderId} · ${r.type}</span><small>${r.createdAt}</small></div><div><b>${r.status}</b><a href="orders.html">Theo dõi đơn</a></div></div>`).join('');
+  }
+  function clearReturnRequests(){ localStorage.removeItem('returnRequests'); renderReturnRequests(); }
+</script>
+</body>
+</html>

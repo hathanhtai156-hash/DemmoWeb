@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiPort Mart - Hồ sơ tài khoản</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="top">
+<div class="top-line"></div>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">LOGIPORT<span>MART.COM</span></div>
+    <a class="header-action" href="index.html"><span class="icon"><i class="fa-solid fa-house"></i></span><div>Trang<br>chủ</div></a>
+    <div class="search">
+      <input type="text" placeholder="Tìm sản phẩm, mã đơn, dịch vụ...">
+      <button type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <div class="header-action"><span class="icon"><i class="fa-solid fa-phone"></i></span><div>Hotline<br>1900.5301</div></div>
+    <a class="header-action header-action-button" href="orders.html"><span class="icon"><i class="fa-solid fa-box"></i></span><div>Tra cứu<br>đơn hàng</div></a>
+    <a class="header-action header-action-button" href="cart.html"><span class="icon"><i class="fa-solid fa-cart-shopping"></i></span><div>Giỏ hàng<br><span id="cartCount">0</span> sản phẩm</div></a>
+    <a class="header-action auth-action" id="authAction" href="profile.html" onclick="toggleUserInfo(event)"><span class="icon"><i class="fa-solid fa-user"></i></span><div id="authActionText">Đăng<br>nhập</div></a>
+    <button id="logoutButtonHeader" class="btn btn-secondary logout-button" type="button" onclick="clearAuth()" style="display:none; margin-left:12px;">Đăng xuất</button>
+  </div>
+</header>
+<nav class="sub-nav public-nav">
+  <div class="sub-nav-inner">
+    <a href="index.html"><i class="fa-solid fa-house"></i> Trang chủ</a>
+    <a href="index.html#products"><i class="fa-solid fa-cart-shopping"></i> Sản phẩm</a>
+    <a href="logistics.html"><i class="fa-solid fa-truck-fast"></i> Dịch vụ Logistics</a>
+    <a href="orders.html"><i class="fa-solid fa-clipboard-list"></i> Tra cứu đơn hàng</a>
+    <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a>
+    <a class="active" href="profile.html"><i class="fa-solid fa-user"></i> Hồ sơ</a>
+  </div>
+</nav>
+<main class="main">
+  <section class="page-hero profile-hero">
+    <div><span><i class="fa-solid fa-user"></i></span><h1>Hồ sơ tài khoản</h1><p>Xem thông tin từng account: tên, username, gmail, số điện thoại, vai trò và số sản phẩm trong giỏ.</p></div>
+  </section>
+  <section class="profile-layout profile-layout-pro">
+    <div class="profile-card profile-card-pro">
+      <div class="profile-avatar-large"><i class="fa-solid fa-user-check"></i></div>
+      <h2 id="profilePageName">Khách hàng</h2>
+      <p id="profilePageUsername">Chưa đăng nhập</p>
+      <div class="profile-stat"><span>Mã hồ sơ</span><strong id="profilePageCode">CUS-</strong></div>
+      <div class="profile-stat"><span>Vai trò</span><strong id="profilePageRole">Khách hàng</strong></div>
+      <div class="profile-stat"><span>Sản phẩm trong giỏ</span><strong id="profilePageCart">0</strong></div>
+      <div class="profile-stat"><span>Cập nhật cuối</span><strong id="profileUpdatedAt">Chưa cập nhật</strong></div>
+      <div class="profile-actions">
+        <a class="btn btn-primary" href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a>
+        <button class="btn btn-secondary" type="button" onclick="downloadMyProfileTxt()"><i class="fa-solid fa-file-lines"></i> Xuất TXT</button>
+        <button class="btn btn-red" type="button" onclick="clearAuth()"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
+      </div>
+    </div>
+    <div class="panel profile-form-card profile-form-pro">
+      <div class="profile-form-head">
+        <div>
+          <h3><i class="fa-solid fa-address-card"></i> Trung tâm hồ sơ khách hàng</h3>
+          <p>Thông tin được lưu vào database, giữ đúng từng account và không tự đăng xuất khi bấm lưu.</p>
+        </div>
+        <span class="data-badge"><i class="fa-solid fa-database"></i> SQLite + TXT</span>
+      </div>
+      <div class="profile-kpi-row">
+        <div><strong>01</strong><span>Thông tin cá nhân</span></div>
+        <div><strong>02</strong><span>Thông tin công ty</span></div>
+        <div><strong>03</strong><span>Xuất file TXT</span></div>
+      </div>
+      <div class="form-row">
+        <div><label>Họ tên</label><input id="profileFullName" placeholder="Nguyễn Văn A"></div>
+        <div><label>Username</label><input id="profileUserNameInput" disabled></div>
+      </div>
+      <div class="form-row">
+        <div><label>Gmail</label><input id="profileEmail" type="email" placeholder="example@gmail.com"></div>
+        <div><label>Số điện thoại</label><input id="profilePhone" type="tel" placeholder="Nhập số điện thoại"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Tên công ty</label><input id="profileCompanyName" placeholder="Công ty / Khách lẻ"></div>
+        <div><label>Mã số thuế</label><input id="profileTaxCode" placeholder="031... nếu có"></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column:1/-1"><label>Địa chỉ giao hàng mặc định</label><input id="profileAddress" placeholder="Số nhà, phường/xã, quận/huyện, tỉnh/thành"></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column:1/-1"><label>Ghi chú khách hàng</label><textarea id="profileNote" rows="3" placeholder="Ví dụ: ưu tiên giao giờ hành chính, gọi trước 15 phút..."></textarea></div>
+      </div>
+      <div class="profile-save-row">
+        <button class="btn btn-primary" type="button" onclick="saveProfileDetails()"><i class="fa-solid fa-floppy-disk"></i> Lưu vào hệ thống</button>
+        <button class="btn btn-secondary" type="button" onclick="downloadMyProfileTxt()"><i class="fa-solid fa-download"></i> Tải hồ sơ TXT</button>
+      </div>
+      <div class="result-box" id="profileResult"></div>
+    </div>
+  </section>
+
+  <section class="section customer-data-panel" id="profileDataTools" style="display:none">
+    <div class="section-head">
+      <div>
+        <h2><i class="fa-solid fa-folder-open"></i> Kho dữ liệu khách hàng</h2>
+        <p class="section-subtitle">Admin/Staff có thể xem dữ liệu khách hàng và xuất file TXT phục vụ hệ thống.</p>
+      </div>
+      <div class="admin-actions">
+        <input id="customerSearchInput" class="inline-report-search" type="text" placeholder="Tìm khách, email, SĐT..." oninput="loadCustomerRecords()">
+        <button class="btn btn-secondary" type="button" onclick="loadCustomerRecords()"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+        <button class="btn btn-primary" type="button" onclick="exportCustomerTxt()"><i class="fa-solid fa-file-lines"></i> Xuất TXT</button>
+      </div>
+    </div>
+    <div class="customer-data-summary">
+      <div><strong id="customerRecordsTotal">0</strong><span>Tài khoản lưu trong hệ thống</span></div>
+      <div><strong>TXT</strong><span>Xuất danh sách khách hàng</span></div>
+      <div><strong>DB</strong><span>Lưu SQLite phía server</span></div>
+    </div>
+    <div class="table-scroll">
+      <table class="customer-table">
+        <thead><tr><th>Mã</th><th>Khách hàng</th><th>Liên hệ</th><th>Công ty</th><th>Địa chỉ</th><th>Ghi chú</th><th>Cập nhật</th></tr></thead>
+        <tbody id="customerRecordsBody"><tr><td colspan="7">Đang tải dữ liệu khách hàng...</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer class="pv-footer">
+  <div class="pv-footer-inner">
+    <div class="pv-footer-col">
+      <h3>Hỗ trợ Khách hàng</h3>
+      <a href="orders.html">Tra cứu đơn hàng</a>
+      <a href="quote.html">Báo giá vận chuyển</a>
+      <a href="cart.html">Mua hàng online</a>
+      <a href="logistics.html">Dịch vụ logistics</a>
+      <a href="profile.html">Khách hàng thân thiết</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Chính sách mua hàng</h3>
+      <a href="javascript:void(0)">Điều kiện giao dịch chung</a>
+      <a href="javascript:void(0)">Chính sách bảo hành</a>
+      <a href="returns.html">Chính sách đổi trả</a>
+      <a href="javascript:void(0)">Chính sách thanh toán</a>
+      <a href="javascript:void(0)">Giao hàng và lắp đặt tại nhà</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Thông tin LogiPort</h3>
+      <a href="contact.html">Giới thiệu công ty</a>
+      <a href="news.html">Tin tức công nghệ</a>
+      <a href="logistics.html">Hệ thống kho vận</a>
+      <a href="quote.html">Báo giá doanh nghiệp</a>
+      <a href="contact.html">Tuyển dụng</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Cộng đồng LogiPort</h3>
+      <a href="tel:19005301"><i class="fa-solid fa-phone"></i> Gọi mua hàng 1900.5301</a>
+      <a href="tel:18006868"><i class="fa-solid fa-headset"></i> Chăm sóc 1800.6868</a>
+      <a href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook LogiPort</a>
+      <a href="https://zalo.me/" target="_blank"><i class="fa-solid fa-comment-dots"></i> Zalo LogiPort</a>
+    </div>
+    <div class="pv-footer-col">
+      <h3>Email liên hệ</h3>
+      <p>Hỗ trợ khách hàng:<br><a href="mailto:cskh@logiportmart.vn">cskh@logiportmart.vn</a></p>
+      <p>Liên hệ báo giá:<br><a href="mailto:baogia@logiportmart.vn">baogia@logiportmart.vn</a></p>
+      <p>Hợp tác phát triển:<br><a href="mailto:hoptac@logiportmart.vn">hoptac@logiportmart.vn</a></p>
+    </div>
+  </div>
+  <div class="pv-payment-row">
+    <div>
+      <h3>Phương thức thanh toán</h3>
+      <div class="pv-pay-icons"><span><i class="fa-solid fa-qrcode"></i> QR Code</span><span><i class="fa-solid fa-money-bill-wave"></i> Tiền mặt</span><span><i class="fa-solid fa-credit-card"></i> Trả góp</span><span><i class="fa-solid fa-building-columns"></i> Internet Banking</span></div>
+    </div>
+    <div>
+      <h3>Danh sách ngân hàng thanh toán online</h3>
+      <div class="pv-bank-list"><span>Vietcombank</span><span>BIDV</span><span>MB Bank</span><span>ACB</span><span>Techcombank</span><span>VPBank</span><span>TPBank</span><span>OCB</span></div>
+    </div>
+  </div>
+  <div class="pv-company-bottom">
+    <div>
+      <h3>CÔNG TY TNHH LOGIPORT MART</h3>
+      <p>© 2026 LogiPort Mart. Mã số thuế: 0319998888. Website thuộc quyền sở hữu của Công ty TNHH LogiPort Mart.</p>
+    </div>
+    <div>
+      <p><strong>Địa chỉ trụ sở chính:</strong><br>69 Nguyễn Gia Trí, Phường 25, Quận Bình Thạnh, Thành phố Hồ Chí Minh, Việt Nam</p>
+      <p><strong>Kho vận:</strong> Cảng Cát Lái · Kho Thủ Đức · Kho Bình Dương</p>
+    </div>
+    <div class="pv-badges"><span>ĐÃ THÔNG BÁO<br>BỘ CÔNG THƯƠNG</span><span>DMCA<br>PROTECTED</span></div>
+  </div>
+</footer>
+<div class="pv-contact-float">
+  <a href="#top" class="pv-top"><i class="fa-solid fa-chevron-up"></i></a>
+  <a href="tel:18006868" class="pv-call">1800 6868 <i class="fa-solid fa-phone"></i></a>
+  <a href="https://zalo.me/" target="_blank" class="pv-zalo">Zalo</a>
+  <a href="mailto:cskh@logiportmart.vn" class="pv-chat">Chat với<br><strong>Tư vấn viên</strong></a>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
