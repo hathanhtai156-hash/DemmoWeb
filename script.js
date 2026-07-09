@@ -5873,9 +5873,28 @@ window.addEventListener('DOMContentLoaded', () => {
         board.innerHTML = '<p>Chưa có chuyến nào. Duyệt đơn ở Admin rồi bấm “Gom đơn + phân tài xế”.</p>';
         return;
       }
+      const mainLoad = loads[0] || {};
+      const steps = mainLoad.greedySteps || [];
+      const route = ['Kho LogiPort', ...(mainLoad.stops || []).map(stop => stop.label || '').filter(Boolean)];
+      const first = steps[0];
+      const firstDecision = first ? `<div class="greedy-first-decision dispatch-first-decision">
+        <div><span>Bước 1 đang ở</span><strong>${esc(String(first.from || 'Kho LogiPort'))}</strong></div>
+        <i class="fa-solid fa-arrow-right"></i>
+        <div><span>So sánh các điểm còn lại</span><p>${(first.candidates || []).slice(0,4).map((c,i)=>`<b class="${i===0?'winner':''}">${esc(c.label || '')}: ${km(c.km)}</b>`).join('')}</p></div>
+        <i class="fa-solid fa-arrow-right"></i>
+        <div><span>Greedy chọn</span><strong>${esc(first.selected || '')}</strong><small>vì gần nhất hiện tại</small></div>
+      </div>` : '';
+      const stepRows = steps.slice(0,10).map(step => `<tr><td><b>${step.step}</b></td><td>${esc(step.from || '')}</td><td><strong>${esc(step.selected || '')}</strong></td><td>${(step.candidates || []).slice(0,4).map((c,i)=>`<span class="candidate-chip ${i===0?'picked':''}">${esc(c.label || '')} · ${km(c.km)}</span>`).join('')}</td><td>Chọn điểm có km nhỏ nhất trong các đơn còn lại.</td></tr>`).join('');
       board.innerHTML = `<div class="dispatch-result-list">${loads.slice(0,4).map(load => `
         <article><b>${esc(load.loadNo || 'Chuyến')}</b><span>Tài xế Demo · ${(load.orders||[]).length} đơn · ${kg(load.totalWeightKg)} · ${km(load.estimatedKm)}</span></article>`).join('')}
-        <article><b>Đã gửi tuyến sang trang Tài xế</b><span>Tài xế đăng nhập để xem thứ tự giao và cập nhật trạng thái.</span></article></div>`;
+        <article><b>Đã gửi tuyến sang trang Tài xế</b><span>Tài xế đăng nhập để xem thứ tự giao và cập nhật trạng thái.</span></article></div>
+        <section class="dispatch-greedy-clear greedy-driver-clear-board">
+          <div class="driver-final-route-head greedy-driver-head"><div><span>Quy trình Greedy</span><h2>Kho → đơn gần nhất → đơn gần nhất tiếp theo → hoàn tất</h2><p>Gom đơn đã duyệt trước, sau đó mỗi bước chọn điểm giao gần nhất từ vị trí hiện tại.</p></div><strong>${steps.length} bước</strong></div>
+          <div class="greedy-rule-strip"><div><b>Candidate Set</b><span>Các điểm giao chưa đi trong chuyến.</span></div><div><b>Selection</b><span>So sánh km và chọn điểm nhỏ nhất.</span></div><div><b>Update</b><span>Sau khi chọn, vị trí hiện tại chuyển sang điểm vừa giao.</span></div></div>
+          ${firstDecision}
+          <div class="driver-final-pills greedy-route-pills">${route.slice(0,12).map((p,i)=>`<span class="${i===0?'depot':''}">${i===0?'Kho':'#'+i} · ${esc(p)}</span>`).join('<i>→</i>')}${route.length>12?'<i>→</i><span>...</span>':''}</div>
+          <details class="greedy-step-details greedy-driver-table" open><summary><i class="fa-solid fa-diagram-project"></i> Bảng từng bước Greedy</summary><div class="greedy-step-scroll"><table class="greedy-step-table"><thead><tr><th>Bước</th><th>Vị trí hiện tại</th><th>Điểm được chọn</th><th>Các ứng viên còn lại</th><th>Lý do</th></tr></thead><tbody>${stepRows || '<tr><td colspan="5">Chưa có bước Greedy.</td></tr>'}</tbody></table></div></details>
+        </section>`;
     }
   }
   async function refreshDispatchSummary(){

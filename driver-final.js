@@ -225,38 +225,147 @@
     setText('driverEstimatedKm', `${km.toFixed(1)} km`);
   }
 
+  function shortPoint(value = '') {
+    return String(value || '')
+      .replace(/,\s*(TP\.?HCM|TP Hồ Chí Minh|Thành phố Hồ Chí Minh)/gi, '')
+      .replace(/Phường\s*/gi, 'P.')
+      .trim();
+  }
+
+  function pointMeta(label = '') {
+    if (typeof window.routePointMeta === 'function') return window.routePointMeta(label);
+    const text = norm(label);
+    const checksum = [...text].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+    return { label, x: (checksum % 19) / 3, y: (checksum % 29) / 4 };
+  }
+
+  function distanceBetween(from = '', to = '') {
+    try {
+      if (typeof window.routeDistanceKm === 'function') {
+        return Number(window.routeDistanceKm(pointMeta(from), pointMeta(to)) || 0);
+      }
+    } catch (_) {}
+    const a = pointMeta(from);
+    const b = pointMeta(to);
+    const dx = Number(a.x || 0) - Number(b.x || 0);
+    const dy = Number(a.y || 0) - Number(b.y || 0);
+    return Number(Math.max(0.4, Math.sqrt(dx * dx + dy * dy) * 2.65).toFixed(1));
+  }
+
+  function buildGreedyProcess(rows = []) {
+    const depot = 'Kho LogiPort - 69 Nguyễn Gia Trí, Bình Thạnh';
+    const groups = [];
+    (rows || []).forEach(order => {
+      const label = order.deliveryPoint || order.address || order.route || 'Điểm giao';
+      const key = norm(label);
+      let group = groups.find(item => item.key === key);
+      if (!group) {
+        group = { key, label, orders: [], totalWeightKg: 0 };
+        groups.push(group);
+      }
+      group.orders.push(order);
+      group.totalWeightKg += Number(order.totalWeightKg || order.weightKg || 0);
+    });
+
+    const remaining = groups.map(group => ({ ...group }));
+    const steps = [];
+    let current = { label: depot };
+    let totalKm = 0;
+
+    while (remaining.length) {
+      const candidates = remaining.map((stop, index) => ({
+        index,
+        label: stop.label,
+        km: distanceBetween(current.label, stop.label),
+        ordersCount: stop.orders.length,
+        totalWeightKg: Number(stop.totalWeightKg.toFixed(1))
+      })).sort((a, b) => a.km - b.km || a.label.localeCompare(b.label, 'vi'));
+      const best = candidates[0];
+      const selected = remaining.splice(best.index, 1)[0];
+      totalKm += Number(best.km || 0);
+      steps.push({
+        step: steps.length + 1,
+        from: current.label,
+        selected: selected.label,
+        selectedKm: Number(best.km || 0),
+        candidates: candidates.slice(0, 5),
+        ordersCount: selected.orders.length,
+        totalWeightKg: Number(selected.totalWeightKg.toFixed(1)),
+        reason: `${shortPoint(selected.label)} gần nhất tại thời điểm này: ${Number(best.km || 0).toFixed(1)}km.`
+      });
+      current = { label: selected.label };
+    }
+
+    return {
+      depot,
+      steps,
+      route: [depot, ...steps.map(step => step.selected)],
+      totalKm: Number(totalKm.toFixed(1)),
+      stopCount: groups.length
+    };
+  }
+
   function renderRoute(rows) {
     const box = document.getElementById('driverGreedyIntegrated');
     if (!box) return;
     if (!rows.length) {
+      window.__driverGreedySequenceMap = {};
       box.innerHTML = '<div class="empty-greedy-driver">Không còn tuyến đang giao. Đơn đã hoàn tất nằm ở mục “Đơn đã giao”.</div>';
       return;
     }
-    const depot = 'Kho LogiPort Bình Thạnh';
-    const stops = [];
-    rows.forEach(o => {
-      const point = o.deliveryPoint || o.address || '';
-      if (point && !stops.some(x => norm(x) === norm(point))) stops.push(point);
-    });
-    const route = [depot, ...stops];
-    const stepHtml = route.slice(0, -1).map((from, index) => {
-      const to = route[index + 1];
-      const km = Number(rows[index]?.estimatedKm || 0) || (index === 0 ? 7.9 : 0.6);
-      return `<article class="driver-final-step">
-        <b>${index + 1}</b>
-        <div><small>Từ</small><strong>${esc(from)}</strong></div>
-        <i>→</i>
-        <div><small>Đến</small><strong>${esc(to)}</strong></div>
-        <em>${km.toFixed(1)}km</em>
-      </article>`;
-    }).join('');
-    box.innerHTML = `<section class="driver-final-route">
-      <div class="driver-final-route-head">
-        <div><span>Tuyến giao hôm nay</span><h2>Đi theo thứ tự Greedy, hoàn tất đơn nào thì đơn đó tự rời danh sách</h2></div>
-        <strong>${stops.length} điểm</strong>
+
+    const plan = buildGreedyProcess(rows);
+    window.__driverGreedySequenceMap = {};
+    plan.steps.forEach(step => { window.__driverGreedySequenceMap[norm(step.selected)] = step; });
+    setText('driverEstimatedKm', `${plan.totalKm.toFixed(1)} km`);
+
+    const first = plan.steps[0];
+    const firstDecision = first ? `<div class="greedy-first-decision">
+      <div><span>Bước 1 đang ở</span><strong>${esc(shortPoint(first.from))}</strong></div>
+      <i class="fa-solid fa-arrow-right"></i>
+      <div><span>So sánh các đơn còn lại</span><p>${first.candidates.map((c, i) => `<b class="${i === 0 ? 'winner' : ''}">${esc(shortPoint(c.label))}: ${Number(c.km).toFixed(1)}km</b>`).join('')}</p></div>
+      <i class="fa-solid fa-arrow-right"></i>
+      <div><span>Kết quả</span><strong>Chọn ${esc(shortPoint(first.selected))}</strong><small>vì gần nhất hiện tại</small></div>
+    </div>` : '';
+
+    const processHtml = `
+      <div class="greedy-rule-strip">
+        <div><b>Greedy = thuật toán tham lam</b><span>Không xét lại toàn bộ, mỗi bước lấy phương án tốt nhất ngay tại vị trí hiện tại.</span></div>
+        <div><b>Công thức demo</b><span>Từ vị trí đang đứng → tính km tới mọi điểm chưa giao → chọn km nhỏ nhất.</span></div>
       </div>
-      <div class="driver-final-pills">${route.map((p, i) => `<span class="${i === 0 ? 'depot' : ''}">${i === 0 ? 'Kho' : '#' + i} · ${esc(p)}</span>`).join('<i>→</i>')}</div>
-      <div class="driver-final-steps">${stepHtml}</div>
+      <div class="greedy-process-flow">
+        <span>1. Kho xuất phát</span><i>→</i><span>2. Candidate Set</span><i>→</i><span>3. Chọn đơn gần nhất</span><i>→</i><span>4. Cập nhật vị trí</span><i>→</i><span>5. Lặp đến khi xong</span>
+      </div>`;
+
+    const stepHtml = plan.steps.map(step => `<article class="driver-final-step greedy-clear-step">
+      <b>${step.step}</b>
+      <div><small>Đang ở</small><strong>${esc(shortPoint(step.from))}</strong></div>
+      <i>→</i>
+      <div><small>Chọn gần nhất</small><strong>${esc(shortPoint(step.selected))}</strong><small>${esc(step.ordersCount)} đơn · ${Number(step.totalWeightKg || 0).toFixed(1)}kg</small></div>
+      <em>${Number(step.selectedKm || 0).toFixed(1)}km</em>
+    </article>`).join('');
+
+    const tableRows = plan.steps.map(step => `<tr>
+      <td><b>${step.step}</b></td>
+      <td>${esc(shortPoint(step.from))}</td>
+      <td><strong>${esc(shortPoint(step.selected))}</strong></td>
+      <td>${step.candidates.map((candidate, index) => `<span class="candidate-chip ${index === 0 ? 'picked' : ''}">${esc(shortPoint(candidate.label))} · ${Number(candidate.km || 0).toFixed(1)}km</span>`).join('')}</td>
+      <td>${esc(step.reason)}</td>
+    </tr>`).join('');
+
+    box.innerHTML = `<section class="driver-final-route greedy-driver-clear-board">
+      <div class="driver-final-route-head greedy-driver-head">
+        <div><span>Tuyến giao hôm nay</span><h2>Greedy: Kho → đơn gần nhất → đơn gần nhất tiếp theo → hoàn tất</h2><p>Hiển thị đúng quy trình trong hình: tài xế đứng ở đâu thì hệ thống chọn điểm gần nhất từ vị trí đó.</p></div>
+        <strong>${plan.stopCount} điểm · ${plan.totalKm.toFixed(1)}km</strong>
+      </div>
+      ${processHtml}
+      ${firstDecision}
+      <div class="driver-final-pills greedy-route-pills">${plan.route.map((p, i) => `<span class="${i === 0 ? 'depot' : ''}">${i === 0 ? 'Kho' : '#' + i} · ${esc(shortPoint(p))}</span>`).join('<i>→</i>')}</div>
+      <div class="driver-final-steps greedy-clear-steps">${stepHtml}</div>
+      <details class="greedy-step-details greedy-driver-table" open>
+        <summary><i class="fa-solid fa-diagram-project"></i> Bảng giải thích từng bước Greedy</summary>
+        <div class="greedy-step-scroll"><table class="greedy-step-table"><thead><tr><th>Bước</th><th>Vị trí hiện tại</th><th>Điểm được chọn</th><th>Các ứng viên còn lại</th><th>Lý do chọn</th></tr></thead><tbody>${tableRows}</tbody></table></div>
+      </details>
     </section>`;
   }
 
@@ -265,6 +374,8 @@
     const point = order.deliveryPoint || order.address || 'Điểm giao';
     const m = statusMeta(order.status);
     const kg = Number(order.totalWeightKg || order.weightKg || 0).toFixed(1);
+    const greedyStep = (window.__driverGreedySequenceMap || {})[norm(point)];
+    const greedyBadge = greedyStep ? `<div class="driver-order-greedy-mini"><span>Greedy #${greedyStep.step}</span><small>${esc(shortPoint(greedyStep.from))} → ${esc(shortPoint(greedyStep.selected))} · gần nhất ${Number(greedyStep.selectedKm || 0).toFixed(1)}km</small></div>` : '';
     const action = m.next ? `<button class="driver-main-action ${m.next === 'Hoàn tất' ? 'complete' : 'receive'}" type="button" onclick="updateDriverOrderStatus('${esc(id)}','${esc(m.next)}')">${m.btn}</button>` : '';
     return `<article class="driver-order-card-final driver-clean-order-card" data-order-id="${esc(id)}">
       <div class="driver-order-top">
@@ -278,6 +389,7 @@
         <span>${esc(order.deliveryZone || 'Tuyến giao')}</span>
       </div>
       <div class="driver-progress final-progress"><span style="width:${m.pct}%"></span></div>
+      ${greedyBadge}
       <div class="driver-order-destination"><small>Điểm giao</small><b>${esc(point)}</b></div>
       ${action}
     </article>`;
